@@ -4,14 +4,64 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>PashHash</title>
+	<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="styles.css" />
 	<script src="bundle.js" defer></script>
 </head>
 
 <body>
-	<input id="seed" placeholder="Enter seed..." />
-	<input id="key" placeholder="Enter key..." />
-	<button id="submit">Generate!</button>
-	<div id="output" />
+	<canvas></canvas>
+	<div id="container">
+		<form id="data">
+			<h1>PashHash</h1>
+			<input id="seed" placeholder="Master password" />
+			<input id="key" placeholder="Site name" />
+			<input id="submit" type="submit" value="Generate!" />
+			<div id="caption">Scroll down!</div>
+			<div id="about">
+				<a href="#info">
+					<svg>
+						<polygon points="0,0 30,0 15,20"></polygon>
+					</svg>
+				</a>
+			</div>
+		</form>
+	</div>
+	<div id="info">
+		<div id="info-container">
+			<h1>About</h1>
+			<p>
+				PashHash isn't a password manager... it's a simple yet secure password
+				"calculator".
+			</p>
+			<p>
+				Unlike standard password managers which store your passwords in a
+				vulnerable database, PashHash utilizes state-of-the-art cryptographic
+				hashing algorithms to procedurally generate random characters.
+			</p>
+			<p>
+				As long as you remember a strong and unique master password, PashHash
+				can use that master password, along with a website name, to
+				"calculate" the same password for that site, every single time.
+			</p>
+			<p>
+				Each master password and site name combination points to a secure
+				16-character password that even the world's most advanced
+				supercomputers can't crack.
+			</p>
+			<p>
+				Our algorithm uses Argon2 hashes, which are hundreds of times more
+				secure than other commonly used algorithms like MD5 or SHA256.
+			</p>
+			<p>
+				In addition, by using our unique Systematic Multi-Index Replacement
+				Algorithm (SMIRA), we guarantee that all generated passwords include
+				lowercase, uppercase, numerical, and special characters - something
+				that most other password generators fail to do.
+			</p>
+			<p>Happy Hacking!</p>
+		</div>
+	</div>
 </body>
 
 </html>

@@ -1,0 +1,167 @@
+* {
+	font-size: 36px;
+	font-family: "Rubik", sans-serif;
+	color: #cdd6f4;
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	background-color: #1e1e2e;
+	scrollbar-width: none;
+}
+
+input {
+	padding: 8px;
+	border-radius: 10px;
+	border: none;
+	background-color: #cdd6f4;
+	color: #11111b;
+}
+
+canvas {
+	z-index: -10;
+	position: fixed;
+}
+
+::placeholder {
+	color: #6c7086;
+}
+
+::-webkit-scrollbar {
+	display: none;
+}
+
+#container {
+	display: flex;
+	height: 100vh;
+}
+
+#data {
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+}
+
+#data h1 {
+	text-align: center;
+	font-size: 64px;
+}
+
+#seed,
+#key {
+	margin: auto;
+	margin-bottom: 24px;
+}
+
+#submit {
+	margin-bottom: 48px;
+	padding: 8px;
+	border-radius: 10px;
+	border: none;
+	background-color: #cba6f7;
+	color: #11111b;
+	cursor: copy;
+	transition: transform 0.5s cubic-bezier(0, 0, 0.5, 1);
+}
+
+#submit:hover {
+	transform: scale(1.1);
+}
+
+#submit:disabled {
+	cursor: default;
+	background-color: #89b4fa;
+}
+
+#caption {
+	text-align: center;
+	font-size: 24px;
+	color: #585b70;
+}
+
+#about {
+	display: flex;
+}
+
+#about a {
+	margin: auto;
+}
+
+#about svg {
+	height: 20px;
+	width: 30px;
+	fill: #585b70;
+	transition: transform 0.5s cubic-bezier(0, 0, 0.5, 1);
+	animation: blink 3s linear infinite;
+	animation-delay: 0.5s;
+}
+
+#about svg:hover {
+	transform: scale(1.2);
+	cursor: pointer;
+	animation: none;
+}
+
+@keyframes blink {
+	50% {
+		opacity: 0;
+	}
+}
+
+#info {
+	height: 100vh;
+	display: flex;
+}
+
+#info-container {
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+}
+
+#info h1 {
+	text-align: center;
+	font-size: 64px;
+	margin-bottom: 0.5em;
+}
+
+#info p {
+	width: 50vw;
+	margin-bottom: 0.5em;
+	text-align: center;
+	font-size: 18px;
+	line-height: 2em;
+}
+
+@media only screen and (max-width: 700px) {
+	* {
+		font-size: 24px;
+	}
+
+	input {
+		width: 300px;
+	}
+
+	#data h1 {
+		font-size: 48px;
+	}
+
+	#submit {
+		width: 316px !important;
+	}
+
+	#caption {
+		font-size: 18px;
+	}
+
+	#info h1 {
+		font-size: 48px;
+	}
+
+	#info p {
+		width: 90vw;
+		margin: 0;
+		font-size: 12px;
+	}
+}
