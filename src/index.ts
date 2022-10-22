@@ -1,16 +1,19 @@
 import { ArgonType, hash } from "argon2-browser";
 
+const data = document.querySelector("#data") as HTMLFormElement;
 const seed = document.querySelector("#seed") as HTMLInputElement;
 const key = document.querySelector("#key") as HTMLInputElement;
 const submit = document.querySelector("#submit") as HTMLButtonElement;
-const output = document.querySelector("#output")!;
 
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const NUMERIC = "0123456789";
 const SPECIAL = "!@#$%^&*";
 
-submit.onclick = async () => {
+data.onsubmit = async () => {
+	if (seed.value.length < 8) return alert("Master password is too short");
+	submit.value = "Calculating...";
+
 	const hex = (
 		await hash({
 			pass: key.value,
@@ -47,5 +50,8 @@ submit.onclick = async () => {
 		res = arr.join("");
 	}
 
-	output.innerHTML = res;
+	navigator.clipboard.writeText(res);
+
+	alert("Password copied to clipboard!");
+	submit.value = "Generate!";
 };

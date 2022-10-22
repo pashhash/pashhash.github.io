@@ -4,14 +4,20 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>PashHash</title>
+	<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="styles.css" />
 	<script src="bundle.js" defer></script>
 </head>
 
 <body>
-	<input id="seed" placeholder="Enter seed..." />
-	<input id="key" placeholder="Enter key..." />
-	<button id="submit">Generate!</button>
-	<div id="output" />
+	<div id="container">
+		<form id="data">
+			<h1 id="title">PashHash</h1>
+			<input id="seed" placeholder="Master password" />
+			<input id="key" placeholder="Site name" />
+			<input id="submit" type="submit" value="Generate!" />
+		</form>
+	</div>
 </body>
 
 </html>
