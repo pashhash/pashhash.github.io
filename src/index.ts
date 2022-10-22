@@ -1,18 +1,26 @@
+import "./matrix";
+
 import { ArgonType, hash } from "argon2-browser";
 
 const data = document.querySelector("#data") as HTMLFormElement;
 const seed = document.querySelector("#seed") as HTMLInputElement;
 const key = document.querySelector("#key") as HTMLInputElement;
 const submit = document.querySelector("#submit") as HTMLButtonElement;
+const about = document.querySelector("#about") as HTMLElement;
 
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const NUMERIC = "0123456789";
 const SPECIAL = "!@#$%^&*";
 
-data.onsubmit = async () => {
+data.onsubmit = async e => {
+	e.preventDefault();
+
 	if (seed.value.length < 8) return alert("Master password is too short");
+	if (!key.value.length) return alert("No site name provided");
+
 	submit.value = "Calculating...";
+	submit.disabled = true;
 
 	const hex = (
 		await hash({
@@ -50,8 +58,12 @@ data.onsubmit = async () => {
 		res = arr.join("");
 	}
 
-	navigator.clipboard.writeText(res);
+	await navigator.clipboard.writeText(res);
 
 	alert("Password copied to clipboard!");
+
 	submit.value = "Generate!";
+	submit.disabled = false;
+	seed.value = "";
+	key.value = "";
 };
