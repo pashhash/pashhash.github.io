@@ -6,7 +6,7 @@ const data = document.querySelector("#data") as HTMLFormElement;
 const seed = document.querySelector("#seed") as HTMLInputElement;
 const key = document.querySelector("#key") as HTMLInputElement;
 const submit = document.querySelector("#submit") as HTMLButtonElement;
-const about = document.querySelector("#about") as HTMLElement;
+const scroll = document.querySelector("#scroll") as HTMLLinkElement;
 
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -67,3 +67,6 @@ data.onsubmit = async e => {
 	seed.value = "";
 	key.value = "";
 };
+
+scroll.onclick = () =>
+	document.querySelector("#info")?.scrollIntoView({ behavior: "smooth" });
