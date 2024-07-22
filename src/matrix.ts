@@ -1,9 +1,28 @@
+import { COLOURS } from "./colours";
+
+// characters used in Matrix font, will be converted to katakana
 const CHARSET =
-	"ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ1234567890";
-const CHAR_HEIGHT = 24;
-const CHAR_WIDTH = 18;
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+const CHAR_HEIGHT = window.innerWidth < 768 ? 16 : 24;
+const CHAR_WIDTH = 0.75 * CHAR_HEIGHT;
 const DELAY = 50;
-const GLITCH_RATE = 0.2;
+const GLITCH_RATE = 0.1;
+const ERROR_RATE = 0.05;
+const ERROR_GLITCH_RATE = 0.6;
+const MESSAGE_RATE = 0.02;
+const FADE = 0.9;
+const GOLD = 0.5;
+const OPACITY = 0.4;
+const ERROR_OPACITY = 0.8;
+const GOLD_OPACITY = 1;
+const MESSAGES = [
+    "HELLOWORLD",
+    "NEALWANG",
+    "THEMATRIX",
+    "3.1415926535",
+    "6.2831853071",
+    "2.7182818284"
+];
 
 const canvas = document.querySelector("canvas")!;
 const ctx = canvas.getContext("2d")!;
@@ -11,53 +30,110 @@ const ctx = canvas.getContext("2d")!;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let SPAWN_RATE = 0.6 / (1920 / canvas.width);
+ctx.font = `${CHAR_HEIGHT * 1.25}px Matrix Code NFI`;
+
+let SPAWN_RATE = canvas.width / 1920;
 
 window.onresize = () => {
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-	SPAWN_RATE = 0.5 / (1920 / canvas.width);
+    SPAWN_RATE = canvas.width / 2500;
 };
 
 let frame = 0;
 
+let mouse = { x: -1000, y: -1000, acc: 0 };
+
+document.onmousemove = e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.acc += e.movementX * e.movementX + e.movementY * e.movementY;
+};
+
 class Stream {
-	private chars: string[] = [];
-	private length: number;
-	private speed: number;
-	private x: number;
-	private glitches: number[] = [];
+    private chars: string[] = [];
+    private length: number;
+    private speed: number;
+    private x: number;
+    private error: boolean;
+    private message: string | undefined;
 
-	public constructor(x: number) {
-		this.length = Math.floor(Math.random() * 40) + 4;
-		this.speed = Math.floor(Math.random() * 2) + 1;
-		this.x = x;
+    public constructor(x: number, message?: string) {
+        this.length = Math.floor(Math.random() * 40) + 4;
+        this.speed = Math.floor(Math.random() * 2) + 1;
+        this.x = x;
 
-		for (let i = 0; i < canvas.height / CHAR_HEIGHT; i++)
-			if (Math.random() < GLITCH_RATE) this.glitches.push(i);
-	}
+        this.error = Math.random() < ERROR_RATE;
 
-	public update() {
-		if (frame % this.speed === 0) {
-			this.chars.push(CHARSET[Math.floor(Math.random() * CHARSET.length)]);
-			if (this.chars.length >= this.length)
-				this.chars[this.chars.length - this.length] = " ";
-		}
+        this.message = message;
+    }
 
-		if (this.chars.length - this.length > canvas.height / CHAR_HEIGHT)
-			return true;
+    public update() {
+        if (frame % this.speed === 0) {
+            if (!this.message) {
+                this.chars.push(
+                    CHARSET[Math.floor(Math.random() * CHARSET.length)]
+                );
+            } else {
+                // custom message
+                this.chars.push(
+                    this.message[(frame / this.speed) % this.message.length]
+                );
+            }
 
-		ctx.font = `${CHAR_HEIGHT}px Rubik`;
+            if (this.chars.length >= this.length) {
+                this.chars[this.chars.length - this.length] = " ";
+            }
+        }
 
-		for (let i = 0; i < this.chars.length; i++) {
-			if (this.glitches.includes(i) && this.chars[i] !== " ")
-				this.chars[i] = CHARSET[Math.floor(Math.random() * CHARSET.length)];
+        if (this.chars.length - this.length > canvas.height / CHAR_HEIGHT)
+            return true;
 
-			ctx.fillStyle = i === this.chars.length - 1 ? "#6c7086" : "#313244";
-			ctx.fillText(this.chars[i], this.x, i * CHAR_HEIGHT);
-		}
-	}
+        for (let i = 0; i < this.chars.length; i++) {
+            // "glitching" characters
+            if (
+                Math.random() <
+                    (this.error ? ERROR_GLITCH_RATE : GLITCH_RATE) &&
+                this.chars[i] !== " " &&
+                !this.message
+            ) {
+                this.chars[i] =
+                    CHARSET[Math.floor(Math.random() * CHARSET.length)];
+            }
+
+            let x = this.x + CHAR_WIDTH / 2;
+            let y = i * CHAR_HEIGHT - CHAR_HEIGHT / 2;
+
+            // don't render tail of stream
+            if (this.chars[i] === " ") continue;
+
+            // circle around mouse for golden code
+            const isGold =
+                (x - mouse.x) * (x - mouse.x) + (y - mouse.y) * (y - mouse.y) <
+                    mouse.acc * GOLD || this.message;
+            const isLast = i === this.chars.length - 1;
+
+            ctx.fillStyle = isGold
+                ? isLast
+                    ? COLOURS.text.hex
+                    : COLOURS.peach.hex
+                : this.error
+                  ? isLast
+                      ? COLOURS.red.hex
+                      : COLOURS.maroon.hex
+                  : isLast
+                    ? COLOURS.text.hex
+                    : COLOURS.green.hex;
+            ctx.globalAlpha =
+                (isGold ? GOLD_OPACITY : this.error ? ERROR_OPACITY : OPACITY) *
+                // fade out characters at end of stream
+                ((i - (this.chars.length - this.length)) / this.length);
+            ctx.fillText(this.chars[i], this.x, i * CHAR_HEIGHT);
+        }
+
+        return false;
+    }
 }
 
 const streams: Stream[] = [];
@@ -65,29 +141,41 @@ const streams: Stream[] = [];
 let lastTick = Date.now();
 
 const tick = () => {
-	requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 
-	if (Date.now() > lastTick + DELAY) {
-		if (Math.random() < SPAWN_RATE)
-			streams.push(
-				new Stream(
-					Math.floor((Math.random() * canvas.width) / CHAR_WIDTH) * CHAR_WIDTH
-				)
-			);
+    if (Date.now() > lastTick + DELAY) {
+        mouse.acc *= FADE;
 
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (Math.random() < SPAWN_RATE) {
+            const message =
+                Math.random() < MESSAGE_RATE
+                    ? MESSAGES[Math.floor(Math.random() * MESSAGES.length)]
+                    : undefined;
 
-		for (let i = 0; i < streams.length; i++) {
-			if (streams[i].update()) {
-				streams.splice(i, 1);
-				i--;
-			}
-		}
+            streams.push(
+                new Stream(
+                    Math.floor((Math.random() * canvas.width) / CHAR_WIDTH) *
+                        CHAR_WIDTH,
+                    message
+                )
+            );
+        }
 
-		frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		lastTick = Date.now();
-	}
+        for (let i = 0; i < streams.length; i++) {
+            if (streams[i].update()) {
+                streams.splice(i, 1);
+                i--;
+            }
+        }
+
+        frame++;
+
+        lastTick = Date.now();
+    }
 };
 
-requestAnimationFrame(tick);
+setTimeout(() => {
+    requestAnimationFrame(tick);
+}, 1500);
